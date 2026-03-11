@@ -9,8 +9,28 @@ class PactLang < Formula
   depends_on "rust" => :build
 
   def install
+    # Install the CLI
     system "cargo", "install", *std_cargo_args(path: "crates/pact-cli")
+    # Install the Language Server
     system "cargo", "install", *std_cargo_args(path: "crates/pact-lsp")
+    # Install the MCP server
+    system "cargo", "install", *std_cargo_args(path: "crates/pact-mcp")
+  end
+
+  def caveats
+    <<~EOS
+      To use PACT with VS Code, configure the LSP path in settings:
+        { "pact.lspPath": "#{bin}/pact-lsp" }
+
+      To use PACT with Claude Desktop, add to your config:
+        {
+          "mcpServers": {
+            "pact": { "command": "#{bin}/pact-mcp" }
+          }
+        }
+
+      Config location: ~/Library/Application Support/Claude/claude_desktop_config.json
+    EOS
   end
 
   test do
